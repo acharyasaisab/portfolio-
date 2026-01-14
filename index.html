@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saisab Acharya — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b0e14;--card:#121826;--accent:#4f46e5;--accent2:#22c55e;--text:#e5e7eb;--muted:#9ca3af}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Poppins',sans-serif;background:#0b0e14;color:#e5e7eb;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:auto;padding:24px}
+    header{position:sticky;top:0;z-index:50;background:rgba(11,14,20,.8);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;letter-spacing:.5px}
+    .nav ul{display:flex;gap:18px;list-style:none}
+    .btn{padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#1f2a44;cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+    .btn.primary{background:linear-gradient(180deg,var(--accent),#3730a3);border:none}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(79,70,229,.35)}
+
+    /* LOADER */
+    #loader{position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,#1f2a44,#0b0e14 60%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .6s ease, visibility .6s ease}
+    #loader.hidden{opacity:0;visibility:hidden}
+    .loader-card{display:flex;flex-direction:column;align-items:center;gap:16px}
+    .logo{font-weight:800;letter-spacing:1px;font-size:28px}
+    .spinner{width:64px;height:64px;border-radius:50%;border:4px solid rgba(255,255,255,.12);border-top-color:var(--accent);animation:spin 1s linear infinite}
+    .progress-wrap{width:220px;height:8px;background:#1f2937;border-radius:999px;overflow:hidden}
+    .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));animation:load 2.2s ease-in-out forwards}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes load{0%{width:0}100%{width:100%}}
+
+    /* HERO */
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center;padding:60px 0}
+    .chip{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:rgba(79,70,229,.15);border:1px solid rgba(79,70,229,.35)}
+    h1{font-size:clamp(32px,5vw,54px);line-height:1.05;margin:16px 0}
+    .gradient{background:linear-gradient(90deg,#a78bfa,#22c55e,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200%}
+    .hero p{color:var(--muted);margin:12px 0 22px}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:.4s;position:relative;overflow:hidden;transform-style:preserve-3d}
+    .card:before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent,rgba(255,255,255,.08),transparent);background-size:200%;opacity:0;transition:.4s}
+    .card:hover:before{opacity:1;animation:shimmer 1.2s linear}
+    .card:hover{box-shadow:0 20px 50px rgba(79,70,229,.35)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+
+    /* PROFILE */
+    .profile-wrap{display:flex;flex-direction:column;gap:14px;align-items:center}
+    .profile-img{width:220px;height:220px;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(79,70,229,.35)}
+    .profile-img img{width:100%;height:100%;object-fit:cover}
+
+    /* SECTIONS */
+    section{padding:50px 0;animation:fadeUp .8s ease both}
+    .section-title{margin-bottom:18px}
+
+    /* SKILLS */
+    .bar{height:8px;border-radius:999px;background:#1f2937;overflow:hidden;margin-top:10px}
+    .bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width 1.8s ease}
+
+    /* TIMELINE */
+    .timeline{position:relative;padding-left:22px}
+    .timeline:before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;background:linear-gradient(var(--accent),transparent)}
+    .t-item{position:relative;padding:10px 0 10px 16px}
+    .t-item:before{content:'';position:absolute;left:-1px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--accent)}
+
+    /* SOCIALS */
+    .socials{display:flex;gap:12px;margin-top:12px}
+    .socials a{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.06);transition:.3s}
+    .socials a:hover{transform:translateY(-3px);background:linear-gradient(180deg,var(--accent),#3730a3);animation:glowPulse 1.5s infinite}
+
+    footer{padding:40px 0;border-top:1px solid rgba(255,255,255,.06)}
+
+    /* PROGRESS BAR */
+    #progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:100}
+
+    /* MUSIC */
+    .music-btn{position:fixed;bottom:20px;left:20px;z-index:100}
+
+    /* PARTICLES */
+    canvas#stars{position:fixed;inset:0;z-index:-1}
+
+    /* ANIMATIONS */
+    @keyframes fadeUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:none}}
+    @keyframes glowPulse{0%{box-shadow:0 0 0 rgba(79,70,229,0)}50%{box-shadow:0 0 30px rgba(79,70,229,.6)}100%{box-shadow:0 0 0 rgba(79,70,229,0)}}
+    @keyframes shimmer{0%{background-position:-200%}100%{background-position:200%}}
+    @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+    .profile-img{animation:floatSlow 6s ease-in-out infinite}
+    @keyframes floatSlow{0%{transform:translateY(0)}50%{transform:translateY(-12px)}100%{transform:translateY(0)}}
+
+    .hero h1 span.gradient{animation:shimmer 4s linear infinite}
+
+    /* TYPING CURSOR */
+    .typing:after{content:'|';margin-left:4px;animation:blink 1s infinite}
+
+    /* COUNTERS */
+    .counters{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .counter{font-size:28px;font-weight:700}
+
+    body.light{background:#f8fafc;color:#0f172a}
+    body.light .card{background:#ffffff;border:1px solid #e5e7eb}
+    body.light .btn{background:#e5e7eb;color:#0f172a}
+
+    @media(max-width:900px){.hero{grid-template-columns:1fr}}
+      /* CONTACT FORM FIXES */
+    .contact-form{display:flex;flex-direction:column;gap:14px}
+    .form-group{position:relative}
+    .contact-form input,
+    .contact-form textarea{
+      width:100%;
+      padding:14px 16px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.06);
+      color:#ffffff;
+      font-size:15px;
+      outline:none;
+      transition:.3s;
+      z-index:1;
+      position:relative;
+    }
+    .contact-form textarea{min-height:140px;resize:vertical}
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder{color:#cbd5e1}
+    .contact-form input:focus,
+    .contact-form textarea:focus{
+      border-color:var(--accent2);
+      box-shadow:0 0 0 2px rgba(34,197,94,.25);
+      background:rgba(34,197,94,.08);
+    }
+    .form-group .focus{
+      position:absolute;
+      inset:0;
+      border-radius:12px;
+      pointer-events:none; /* IMPORTANT: allows clicking */
+    }
+    .send-btn{margin-top:6px}
+
+    body.light .contact-form input,
+    body.light .contact-form textarea{
+      background:#f1f5f9;
+      color:#0f172a;
+      border:1px solid #cbd5e1;
+    }
+    body.light .contact-form input::placeholder,
+    body.light .contact-form textarea::placeholder{color:#475569}
+
+</style>
+</head>
+<body>
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-card">
+      <div class="logo">Saisab Acharya</div>
+      <div class="spinner"></div>
+      <div class="progress-wrap"><div class="progress-bar"></div></div>
+      <div style="color:var(--muted)">Loading experience…</div>
+    </div>
+  </div>
+
+  <div id="progress"></div>
+  <canvas id="stars"></canvas>
+
+  <header>
+    <div class="container nav">
+      <div class="brand">Saisab Acharya</div>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#journey">Journey</a></li>
+        <li><a href="#contact" class="btn">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <span class="chip">🚀 Student • Creator • Marketer</span>
+        <h1>Hi, I'm <span class="gradient">Saisab Acharya</span><br/><span id="typing" class="typing"></span></h1>
+        <p>Class 11 student from <b>Nepal</b>. Passionate about coding, editing, marketing, public speaking and creating value online.</p>
+        <div class="hero-actions">
+          <button class="btn primary" onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})">View Projects</button>
+          <button class="btn" onclick="toggleMode()">Light/Dark</button>
+        </div>
+      </div>
+      <div class="profile-wrap card">
+        <div class="profile-img">
+          <img src="profile.jpeg" alt="Saisab Acharya" />
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn primary" href="#contact">Hire / Contact</a>
+          <a class="btn" href="resume.pdf" download>Download Resume</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="section-title"><h2>About Me</h2></div>
+      <div class="card">I am a motivated learner who loves writing poems & stories, playing guitar, singing, cooking, drawing and football. I have completed NCC training and have strong skills in marketing and public speaking.</div>
+    </section>
+
+    <section id="skills">
+      <div class="section-title"><h2>Skills</h2></div>
+      <div class="grid">
+        <div class="card"><h3>Video Editing</h3><div class="bar"><span data-progress="75"></span></div></div>
+        <div class="card"><h3>Content Writing</h3><div class="bar"><span data-progress="70"></span></div></div>
+        <div class="card"><h3>Marketing</h3><div class="bar"><span data-progress="80"></span></div></div>
+        <div class="card"><h3>Public Speaking</h3><div class="bar"><span data-progress="85"></span></div></div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="section-title"><h2>Services</h2></div>
+      <div class="grid">
+        <div class="card">Content Writing (blogs, reviews, stories, poems)</div>
+        <div class="card">Video Editing</div>
+        <div class="card">Marketing & Promotion</div>
+        <div class="card">Event Hosting & Public Speaking</div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="section-title"><h2>Projects</h2></div>
+      <div class="grid">
+        <div class="card">Book Review Articles</div>
+        <div class="card">Blog Posts</div>
+        <div class="card">School Presentations</div>
+        <div class="card">Personal Portfolio Website</div>
+      </div>
+    </section>
+
+    <section id="journey">
+      <div class="section-title"><h2>My Journey</h2></div>
+      <div class="card timeline">
+        <div class="t-item"><b>2022</b> — Started reading books & writing reviews</div>
+        <div class="t-item"><b>2023</b> — Started learning coding</div>
+        <div class="t-item"><b>2024</b> — Started video editing</div>
+        <div class="t-item"><b>Now</b> — Marketing, public speaking & building my brand</div>
+      </div>
+    </section>
+
+    <section id="contact">
+  <div class="section-title"><h2>Contact Me</h2></div>
+  <div class="card">
+    <div class="grid">
+      <div>
+        <p><b>Phone:</b> <a href="tel:9767015494">+977 9767015494</a></p>
+        <p><b>Email:</b> <a href="mailto:acharyasaisab0@gmail.com">acharyasaisab0@gmail.com</a></p>
+        <p><b>Facebook:</b> <a href="https://www.facebook.com/saisab.acharya" target="_blank">facebook.com/saisab.acharya</a></p>
+        <div class="socials">
+          <a href="https://www.facebook.com/saisab.acharya" target="_blank" title="Facebook">📘</a>
+          <a href="mailto:acharyasaisab0@gmail.com" title="Email">✉️</a>
+          <a href="tel:9767015494" title="Call">📞</a>
+        </div>
+      </div>
+      <div>
+        <form id="contactForm" class="contact-form" action="https://formsubmit.co/acharyasaisab0@gmail.com" method="POST">
+  <!-- FormSubmit config -->
+  <input type="hidden" name="_captcha" value="false">
+  <input type="hidden" name="_subject" value="New message from SaisabAcharya.com">
+  <input type="hidden" name="_template" value="table">
+  <input type="hidden" name="_next" value="#contact">
+
+  <div class="form-group">
+    <input type="text" name="name" id="name" placeholder="Your Name" required />
+    <span class="focus"></span>
+  </div>
+  <div class="form-group">
+    <input type="email" name="email" id="email" placeholder="Your Email" required />
+    <span class="focus"></span>
+  </div>
+  <div class="form-group">
+    <input type="text" name="subject" id="subject" placeholder="Subject" required />
+    <span class="focus"></span>
+  </div>
+  <div class="form-group">
+    <textarea name="message" id="message" rows="4" placeholder="Your Message" required></textarea>
+    <span class="focus"></span>
+  </div>
+  <button type="submit" class="btn primary send-btn">Send Message</button>
+  <div id="formStatus" style="margin-top:10px;color:var(--accent2);display:none">Message sent successfully!</div>
+</form>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <section>
+  <div class="section-title"><h2>What You Can Hire Me For</h2></div>
+  <div class="grid">
+    <div class="card">📸 Photo Editing</div>
+    <div class="card">🎨 Thumbnail Design</div>
+    <div class="card">🎬 Video Editing</div>
+    <div class="card">📝 Reviews & Content Writing</div>
+    <div class="card">💻 Web Design</div>
+    <div class="card">📢 Marketing & Promotion</div>
+  </div>
+  <div class="card" style="margin-top:16px">You can call me for photo, thumbnail, video edit, reviews, web design and more. I’m always ready to help you grow your brand.</div>
+</section>
+  </main>
+
+  <footer>
+    <div class="container">© <span id="year"></span> Saisab Acharya — Built with passion.</div>
+  </footer>
+
+  <button class="btn music-btn" id="musicBtn">🎵 Music</button>
+  <audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Hide loader after page load
+    window.addEventListener('load',()=>{
+      setTimeout(()=>{document.getElementById('loader').classList.add('hidden');},300);
+    });
+
+    // Typing animation
+    const texts = ["I build for impact.", "I write for influence.", "I speak with confidence.", "I create my future."]; 
+    let tIndex = 0, cIndex = 0; 
+    const typingEl = document.getElementById('typing');
+    function typeEffect(){
+      if(cIndex < texts[tIndex].length){typingEl.textContent += texts[tIndex].charAt(cIndex);cIndex++;setTimeout(typeEffect, 80);} 
+      else {setTimeout(eraseEffect, 1200);} }
+    function eraseEffect(){ if(cIndex > 0){typingEl.textContent = texts[tIndex].substring(0, cIndex-1);cIndex--;setTimeout(eraseEffect, 40);} 
+      else {tIndex = (tIndex + 1) % texts.length;setTimeout(typeEffect, 400);} }
+    typeEffect();
+
+    // Light/Dark
+    function toggleMode(){document.body.classList.toggle('light')}
+
+    // Skill bars
+    document.querySelectorAll('.bar span').forEach(span=>{span.style.width = span.getAttribute('data-progress') + '%';});
+
+    // Scroll progress
+    window.addEventListener('scroll',()=>{
+      const sc = document.documentElement.scrollTop;
+      const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      document.getElementById('progress').style.width = (sc / h) * 100 + '%';
+    });
+
+    // 3D tilt cards
+    document.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('mousemove',e=>{
+        const r = card.getBoundingClientRect();
+        const x = e.clientX - r.left; const y = e.clientY - r.top;
+        const rx = ((y - r.height/2) / r.height) * 10;
+        const ry = ((x - r.width/2) / r.width) * -10;
+        card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+      });
+      card.addEventListener('mouseleave',()=>{card.style.transform='none'});
+    });
+
+    // Counters
+    const counters = document.querySelectorAll('.counter');
+    const counterObs = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const el = e.target; const target = +el.getAttribute('data-target'); let cur = 0;
+          const step = target/60;
+          const int = setInterval(()=>{cur += step; if(cur >= target){el.textContent = target; clearInterval(int);} else {el.textContent = Math.floor(cur);} }, 20);
+          counterObs.unobserve(el);
+        }
+      });
+    },{threshold:.5});
+    counters.forEach(c=>counterObs.observe(c));
+
+    // Music toggle
+    const music = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+    let playing = false;
+    musicBtn.addEventListener('click',()=>{
+      if(!playing){music.play(); musicBtn.textContent='⏸ Pause'; playing=true;} else {music.pause(); musicBtn.textContent='🎵 Music'; playing=false;}
+    });
+
+    // Particles (stars)
+    const canvas = document.getElementById('stars'); const ctx = canvas.getContext('2d');
+    let w,h; function resize(){w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight;} window.addEventListener('resize',resize); resize();
+    const stars = Array.from({length:120},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5+0.5,s:Math.random()*0.5+0.2}));
+    function draw(){ ctx.clearRect(0,0,w,h); ctx.fillStyle='white'; stars.forEach(s=>{ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill(); s.y+=s.s; if(s.y>h){s.y=0; s.x=Math.random()*w;} }); requestAnimationFrame(draw);} draw();
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
